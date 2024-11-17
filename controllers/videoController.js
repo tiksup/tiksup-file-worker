@@ -1,9 +1,8 @@
-const { validationResult } = require('express-validator');
-const fs = require('fs').promises;
-const Video = require('../models/video');
-const { uploadS3File } = require('../services/s3Uploader');
+import { validationResult } from 'express-validator';
+import Video from '../models/video.js';
+import { uploadS3File } from '../services/s3Uploader.js';
 
-const createVideo = async (req, res) => {
+export const createVideo = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -20,8 +19,7 @@ const createVideo = async (req, res) => {
       return res.status(400).json({ mensaje: 'Faltan datos necesarios.' });
     }
 
-    const fileBuffer = await fs.readFile(req.file.path);
-    const resultadoS3 = await uploadS3File(fileName, fileBuffer);
+    const resultadoS3 = await uploadS3File(fileName, req.file.buffer);
     console.log('Resultado S3:', resultadoS3);
 
     const video = new Video({
@@ -34,7 +32,6 @@ const createVideo = async (req, res) => {
 
     console.log('Video a guardar:', video);
     await video.save();
-    await fs.unlink(req.file.path); 
 
     res.status(200).json({ mensaje: 'Datos procesados exitosamente' });
   } catch (error) {
@@ -42,5 +39,3 @@ const createVideo = async (req, res) => {
     res.status(500).json({ mensaje: 'Error al procesar los datos' });
   }
 };
-
-module.exports = { createVideo };

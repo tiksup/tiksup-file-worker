@@ -1,5 +1,7 @@
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-require('dotenv').config();
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
@@ -9,7 +11,7 @@ const s3 = new S3Client({
   },
 });
 
-const uploadS3File = async (filename, buffer) => {
+export const uploadS3File = async (filename, buffer) => {
   const params = {
     Bucket: process.env.AWS_BUCKET_NAME,
     Key: filename,
@@ -27,5 +29,3 @@ const uploadS3File = async (filename, buffer) => {
     throw error;
   }
 };
-
-module.exports = { uploadS3File };

@@ -2,9 +2,11 @@ FROM node:18
 
 WORKDIR /app
 
-COPY . .
+COPY package.json ./
 
-RUN npm install @aws-sdk/client-s3 @aws-sdk/s3-request-presigner express mongoose multer dotenv jsonwebtoken express-validator
+RUN npm cache clean --force && npm install
+
+COPY . .
 
 EXPOSE 3000
 
